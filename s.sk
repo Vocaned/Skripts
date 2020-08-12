@@ -1,0 +1,7 @@
+command /s:
+    description: /s
+    usage: /s
+    executable by: players
+    trigger:
+        broadcast "%player's display name% » /s"
+        execute console command "/discord broadcast %player's display name% » /s"

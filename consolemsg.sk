@@ -1,0 +1,7 @@
+command /consolemsg <text>:
+    description: Sends a message from console
+    usage: /consolemsg
+    executable by: console
+    trigger:
+        broadcast "§l§cConsole§r: %args%"
+        execute console command "/discord broadcast **:bangbang: Console**: %args%"

@@ -1,0 +1,19 @@
+command /nick <text>:
+    description: Set your nickname
+    usage: /nick <nickname>
+    aliases: nickname
+    executable by: players
+    trigger:
+        set {_args::*} to args split at " "
+        set {_temp} to the first element of {_args::*}
+        if length of {_temp} is more than 32:
+            message "§cError: Nickname too long. Max 32 characters allowed"
+            stop
+        loop all players:
+            if unformatted args is unformatted loop-player's display name:
+                message "§cError: This nickname is already taken!"
+                stop
+        execute console command "/essentials:nick %player% %{_temp}%"
+        replace every "&" with "§" in {_temp}
+        broadcast "%player% §echanged their nickname to §r%{_temp}%"
+        execute console command "/discord broadcast :notepad_spiral: **%player% changed their nickname to %{_temp}%**"

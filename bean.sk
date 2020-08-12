@@ -1,0 +1,11 @@
+command /bean <offlineplayer> [<text="You have been beaned!">]:
+    description: Beans someone
+    usage: /bean 
+    executable by: players and console
+    trigger:
+        if player doesn't exist:
+            set {_name} to "Console"
+        else:
+            set {_name} to player's display name
+        broadcast "§6Player §r%{_name}% §6beaned §c%arg 1% §6for: §c%arg 2%"
+        execute console command "/discord broadcast **Player %{_name}% beaned %arg 1% for: %arg 2%**"

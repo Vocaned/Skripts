@@ -1,0 +1,45 @@
+on chat:
+    if message contains "[item]":
+        cancel event
+        set {_type} to ""
+        set {_name} to name of player's tool
+        if {_name} isn't set:
+            set {_name} to "%type of player's tool%" in strict proper case
+            if {_name} isn't set:
+                set {_name} to "Air"
+        else:
+            set {_name} to "&o%{_name}%"
+            set {_type} to "\n&8 %type of player's tool%" in strict proper case
+
+
+        set {_amount} to item amount of player's tool
+        if {_amount} is 0:
+            set {_amount} to "∞"
+        
+        set {_name} to "%{_amount}%x %{_name}%"
+
+        set {_Lore} to "%lore of player's tool%"
+        replace all ", " and " and " with "\n" in {_Lore}
+        if {_Lore} is "<none>":
+            set {_Lore} to ""
+
+        set {_enchants::*} to player's tool's enchantments
+        set {_enchant} to ""
+        loop {_enchants::*}:
+            set {_enchant} to "%{_enchant}%\n&7%loop-value%" 
+        set {_enchant} to "%{_enchant}%\n"
+
+        set {_parts::*} to "[{""text"": ""%player's display name% » ""}"
+        set {_dcparts::*} to "%player's display name% »"
+        set {_chunks::*} to message split at " "
+
+        loop {_chunks::*}:
+            if loop-value is "[item]":
+                add "{""text"":""&b[&f%{_name}%&b]&f "",""hoverEvent"":{""action"":""show_text"",""value"":[{""text"":""%{_name}%""},{""text"":""%{_enchant}%%{_Lore}%%{_type}%""}]}}" to {_parts::*}
+                add "[%{_name}%]" to {_dcparts::*}
+            else:
+                add "{""text"": ""%jsonSanitize(loop-value)% ""}" to {_parts::*}
+                add loop-value to {_dcparts::*}
+
+        execute console command "/tellraw @a %join {_parts::*} with "",""%]"
+        execute console command "/discord broadcast %join {_dcparts::*} with "" ""%"
