@@ -1,0 +1,26 @@
+on chat:
+    set {_chunks::*} to message split at "|"
+    set {_parts::*} to "[{""text"": ""%player's display name% » ""}"
+    set {_dcparts::*} to "%player's display name% » "
+    loop {_chunks::*}:
+        if the first 2 characters of loop-value isn't "[##":
+            add "{""text"": ""%jsonSanitize(loop-value)%""}" to {_parts::*}
+            add loop-value to {_dcparts::*}
+            continue
+        if the subtext of loop-value from characters 9 to 9 isn't "]":
+            add "{""text"": ""%jsonSanitize(loop-value)%""}" to {_parts::*}
+            add loop-value to {_dcparts::*}
+            continue
+
+        set {_col} to the substring of loop-value from characters 2 to 8
+        set {_text} to the substring of loop-value from characters 10 to (the length of loop-value)
+
+        add "{""text"": ""%jsonSanitize({_text})%"", ""color"": ""%jsonSanitize({_col})%""}" to {_parts::*}
+        add {_text} to {_dcparts::*}
+
+        set {_shouldsend} to true
+        cancel event
+
+    if {_shouldsend} is set:
+        execute console command "/tellraw @a %join {_parts::*} with "",""%]"
+        execute console command "/discord broadcast %join {_dcparts::*} with """"%"

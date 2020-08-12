@@ -1,0 +1,12 @@
+command /quit <text>:
+    description: Quit with a reason
+    usage: /quit <reason>
+    executable by: players
+    trigger:
+        if length of args is less than 1:
+            set {_reason} to "/quit"
+        else:
+            set {_reason} to args
+        kick the player due to {_reason}
+        broadcast "&e%player's name% left the game: %{_reason}%"
+        execute console command "/discord broadcast :outbox_tray: **%player's name% left Server: %{_reason}%**"

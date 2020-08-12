@@ -1,0 +1,7 @@
+command /spawn:
+	description: Go to spawn
+	usage: /spawn
+	executable by: players
+	trigger:
+		teleport player to spawn point of "world"
+

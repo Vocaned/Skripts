@@ -1,0 +1,71 @@
+options:
+	# Delete tab completions when the server starts
+	delete-tab-completions-on-server-start: false # true/false
+
+import:
+	org.bukkit.event.server.TabCompleteEvent
+	java.util.Arrays
+
+plural expression tab completions:
+	return type: string
+	loop of: string
+	get:
+		return {tabcompletions::*}
+	add:
+		add change values where [{tabcompletions::*} does not contain input] to {tabcompletions::*}
+	set:
+		set {tabcompletions::*} to change values
+	remove:
+		remove change values from {tabcompletions::*}
+	delete:
+		delete {tabcompletions::*}
+	reset:
+		delete {tabcompletions::*}
+
+effect:
+	patterns:
+		create tab complet(er|ion) for %strings%
+		make tab complet(er|ion) for %strings%
+	trigger:
+		set {_l::*} to expression-1
+		loop {_l::*}:
+			add loop-value to tab completions
+
+on skript load:
+	{@delete-tab-completions-on-server-start} is true
+	delete tab completions
+
+function firstXElementsCompare(l1: objects, l2: objects, x: number) :: boolean:
+	loop {_x} times:
+		{_l1::%loop-num%} != {_l2::%loop-num%}
+		return false
+	return true
+
+on TabCompleteEvent:
+	loop {tabcompletions::*}:
+		set {_l} to loop-value.split(" ", 2)
+		event.getBuffer() starts with "/%{_l}[0]% "
+		add {_l}[1] to {_fullcmds::*}
+	{_fullcmds::*} is set
+	set {_cmd} to event.getBuffer().split(" ", 2)[1]
+	if {_cmd} is not set:
+		loop {_fullcmds::*}:
+			set {_l2::*} to split loop-value at " "
+			{_out::*} does not contain {_l2::1}
+			add {_l2::1} to {_out::*}
+	else:
+		set {_cmd1::*} to split {_cmd} at " "
+		set {_s} to size of {_cmd1::*}
+		set {_cmd-last} to last element of {_cmd1::*}
+		loop {_fullcmds::*}:
+			delete {_l::*}
+			set {_l::*} to split loop-value at " "
+			firstXElementsCompare({_l::*}, {_cmd1::*}, {_s}-1) = true
+			{_l::%{_s}%} is set
+			{_l::%{_s}%} starts with {_cmd-last}
+			{_cmd-last} is not {_l::%{_s}%}
+			{_out::*} does not contain {_l::%{_s}%}
+			add {_l::%{_s}%} to {_out::*}
+	{_out::*} is set
+	set {_a} to Arrays.asList([{_out::*}])
+	event.setCompletions({_a})

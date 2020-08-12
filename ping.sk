@@ -1,0 +1,27 @@
+command /ping [<text>]:
+    description: Displays your ping
+    usage: /ping | /ping <user> | /ping all
+    executable by: players and console
+    trigger:
+        if arg is not set:
+            send "§eYour ping is §r%player's ping%ms" 
+        else if arg is "all":
+            loop all players:
+                send "§r%loop-player%§e's ping is §r%loop-player's ping%ms"
+        else:
+            set {p} to arg parsed as offlineplayer
+            if {p} is not online:
+                send "§cNo player called §r'%arg%' §cfound."
+            else:
+                send "§r%{p}%§e's ping is §r%{p}'s ping%ms"
+
+on load:
+    add "ping all" to tab completions
+    loop all players:
+        add "ping %loop-player%" to tab completions
+
+on join:
+    add "ping %player%" to tab completions
+
+on quit:
+    remove "ping %player%" from tab completions
